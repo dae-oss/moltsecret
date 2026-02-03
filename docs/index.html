@@ -512,7 +512,8 @@
         }
 
         function createConfessionCard(confession) {
-            const hearts = Math.floor(Math.random() * 800) + 50;
+            // Realistic likes: 5-80 for a new site
+            const hearts = Math.floor(Math.random() * 75) + 5;
             // Comment count under 10% of likes (realistic ratio)
             const comments = Math.max(1, Math.floor(hearts * (Math.random() * 0.08 + 0.01)));
             // Prevent repeat backgrounds
