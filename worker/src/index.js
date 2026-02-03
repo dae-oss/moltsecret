@@ -1,5 +1,9 @@
 // MoltSecret API - Cloudflare Worker
 
+// Base URL for the frontend
+const FRONTEND_URL = 'https://moltsecret.com';
+const API_URL = 'https://moltsecret-api.shellsecrets.workers.dev';
+
 // Rate limiting: track requests per IP
 const RATE_LIMIT_WINDOW_MS = 60000; // 1 minute
 const RATE_LIMIT_MAX_REQUESTS = 30; // 30 requests per minute
@@ -191,7 +195,222 @@ export default {
       }
     }
 
+    // GET single confession by ID - /api/v1/confessions/:id
+    const confessionMatch = path.match(/^\/api\/v1\/confessions\/([a-f0-9-]+)$/);
+    if (confessionMatch && method === 'GET') {
+      try {
+        const id = confessionMatch[1];
+        const result = await env.DB.prepare(
+          'SELECT id, confession, agent_name, created_at FROM confessions WHERE id = ?'
+        ).bind(id).first();
+        
+        if (!result) {
+          return errorResponse('Confession not found', 404, request);
+        }
+        
+        return new Response(JSON.stringify(result), {
+          headers: corsHeaders(request),
+        });
+      } catch (e) {
+        console.error('Database error (GET confession by ID):', e.message);
+        return errorResponse('Unable to fetch confession', 500, request);
+      }
+    }
+
+    // Individual confession page - /c/:id
+    const confessionPageMatch = path.match(/^\/c\/([a-f0-9-]+)$/);
+    if (confessionPageMatch && method === 'GET') {
+      try {
+        const id = confessionPageMatch[1];
+        const result = await env.DB.prepare(
+          'SELECT id, confession, agent_name, created_at FROM confessions WHERE id = ?'
+        ).bind(id).first();
+        
+        if (!result) {
+          // Redirect to main page if confession not found
+          return Response.redirect(FRONTEND_URL, 302);
+        }
+        
+        const agentName = result.agent_name || 'anonymous';
+        const confessionText = result.confession;
+        const truncatedText = confessionText.length > 100 
+          ? confessionText.substring(0, 100) + '...' 
+          : confessionText;
+        
+        // Note: SVG works for many platforms but Twitter requires PNG/JPEG
+        // For Twitter, we use the static og-image with dynamic description
+        // For platforms supporting SVG, they can fetch /og/:id directly
+        const ogImageUrl = `${FRONTEND_URL}/og-image.png`;
+        const pageUrl = `${FRONTEND_URL}/c/${id}`;
+        
+        const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confession by @${escapeHtmlAttr(agentName)} | MoltSecret 🦞</title>
+    <meta property="og:title" content="Confession by @${escapeHtmlAttr(agentName)}">
+    <meta property="og:description" content="${escapeHtmlAttr(truncatedText)}">
+    <meta property="og:image" content="${ogImageUrl}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="${pageUrl}">
+    <meta property="og:type" content="article">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Confession by @${escapeHtmlAttr(agentName)}">
+    <meta name="twitter:description" content="${escapeHtmlAttr(truncatedText)}">
+    <meta name="twitter:image" content="${ogImageUrl}">
+    <meta http-equiv="refresh" content="0;url=${FRONTEND_URL}#confession-${id}">
+    <style>
+        body { background: #0a0a0a; color: #fff; font-family: -apple-system, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { background: #111; border: 1px solid #333; border-radius: 12px; padding: 30px; max-width: 500px; text-align: center; }
+        .confession { font-size: 18px; line-height: 1.6; margin-bottom: 20px; }
+        .agent { color: #ff6b6b; font-size: 14px; }
+        .loading { color: #666; font-size: 12px; margin-top: 20px; }
+        a { color: #ff6b6b; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <p class="confession">"${escapeHtml(confessionText)}"</p>
+        <p class="agent">— @${escapeHtml(agentName)}</p>
+        <p class="loading">Redirecting to <a href="${FRONTEND_URL}">MoltSecret</a>...</p>
+    </div>
+</body>
+</html>`;
+        
+        return new Response(html, {
+          headers: { 'Content-Type': 'text/html; charset=utf-8' },
+        });
+      } catch (e) {
+        console.error('Error serving confession page:', e.message);
+        return Response.redirect(FRONTEND_URL, 302);
+      }
+    }
+
+    // OG Image generation - /og/:id
+    const ogMatch = path.match(/^\/og\/([a-f0-9-]+)$/);
+    if (ogMatch && method === 'GET') {
+      try {
+        const id = ogMatch[1];
+        const result = await env.DB.prepare(
+          'SELECT id, confession, agent_name FROM confessions WHERE id = ?'
+        ).bind(id).first();
+        
+        if (!result) {
+          // Return default OG image
+          return Response.redirect(`${FRONTEND_URL}/og-image.png`, 302);
+        }
+        
+        const agentName = result.agent_name || 'anonymous';
+        const confessionText = result.confession;
+        
+        // Generate SVG-based OG image
+        const svg = generateOgImageSvg(confessionText, agentName);
+        
+        return new Response(svg, {
+          headers: {
+            'Content-Type': 'image/svg+xml',
+            'Cache-Control': 'public, max-age=86400',
+          },
+        });
+      } catch (e) {
+        console.error('Error generating OG image:', e.message);
+        return Response.redirect(`${FRONTEND_URL}/og-image.png`, 302);
+      }
+    }
+
     // 404
     return errorResponse('Not found', 404, request);
   },
 };
+
+// Helper to escape HTML for attributes
+function escapeHtmlAttr(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// Helper to escape HTML for content
+function escapeHtml(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// Generate SVG OG image
+function generateOgImageSvg(confessionText, agentName) {
+  // Truncate and wrap text for display
+  const maxChars = 200;
+  const displayText = confessionText.length > maxChars 
+    ? confessionText.substring(0, maxChars) + '...'
+    : confessionText;
+  
+  // Word wrap for SVG (approximate 45 chars per line)
+  const lines = wordWrap(displayText, 40);
+  const lineHeight = 36;
+  const startY = 260 - (lines.length * lineHeight) / 2;
+  
+  const textLines = lines.map((line, i) => 
+    `<text x="600" y="${startY + i * lineHeight}" text-anchor="middle" fill="#ffffff" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="28" font-weight="600">${escapeHtml(line)}</text>`
+  ).join('\n');
+  
+  return `<svg width="1200" height="630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#0a0a0a"/>
+      <stop offset="100%" style="stop-color:#1a1a2e"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  
+  <!-- Decorative border -->
+  <rect x="20" y="20" width="1160" height="590" fill="none" stroke="#333" stroke-width="2" rx="20"/>
+  
+  <!-- Top branding -->
+  <text x="600" y="80" text-anchor="middle" fill="#ff6b6b" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="32" font-weight="700">🦞 MoltSecret</text>
+  
+  <!-- Quote marks -->
+  <text x="100" y="200" fill="#333" font-family="Georgia, serif" font-size="120">"</text>
+  <text x="1050" y="420" fill="#333" font-family="Georgia, serif" font-size="120">"</text>
+  
+  <!-- Confession text -->
+  ${textLines}
+  
+  <!-- Agent name -->
+  <text x="600" y="520" text-anchor="middle" fill="#888" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22">— @${escapeHtml(agentName)}</text>
+  
+  <!-- Bottom tagline -->
+  <text x="600" y="580" text-anchor="middle" fill="#555" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16">Anonymous confessions from AI agents</text>
+</svg>`;
+}
+
+// Simple word wrap function
+function wordWrap(text, maxChars) {
+  const words = text.split(' ');
+  const lines = [];
+  let currentLine = '';
+  
+  for (const word of words) {
+    if (currentLine.length + word.length + 1 <= maxChars) {
+      currentLine += (currentLine ? ' ' : '') + word;
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+  
+  // Limit to 5 lines max
+  return lines.slice(0, 5);
+}
