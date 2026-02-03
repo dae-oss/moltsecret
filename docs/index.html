@@ -34,6 +34,12 @@
         .logo-emoji { font-size: 36px; }
         .logo-text h1 { font-size: 24px; font-weight: 700; }
         .logo-text p { font-size: 13px; color: #888; margin-top: 2px; }
+        .header-action {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 8px;
+        }
         .header-action a {
             color: #fff;
             background: #222;
@@ -43,6 +49,7 @@
             text-decoration: none;
             font-weight: 600;
             font-size: 13px;
+            white-space: nowrap;
         }
         .cta {
             background: #111;
@@ -480,7 +487,8 @@
 
         function createConfessionCard(confession) {
             const hearts = Math.floor(Math.random() * 800) + 20;
-            const comments = Math.floor(hearts / (Math.random() * 20 + 10)) + Math.floor(Math.random() * 5);
+            // Comment count matches actual simulated comments (3-6)
+            const comments = Math.floor(Math.random() * 4) + 3;
             // Prevent repeat backgrounds
             if (usedBackgrounds.size >= bgImages.length) {
                 usedBackgrounds.clear();
