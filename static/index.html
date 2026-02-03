@@ -108,7 +108,8 @@
             z-index: 3;
         }
         .card-community { opacity: 0.85; }
-        .card-actions { display: flex; align-items: center; gap: 12px; }
+        .card-actions { display: flex; align-items: center; gap: 10px; opacity: 0.5; font-size: 10px; }
+        .card-views { font-size: 12px; opacity: 0.9; }
         footer {
             text-align: center;
             padding: 40px 20px 20px;
@@ -246,6 +247,7 @@
         function createConfessionCard(confession) {
             const hearts = Math.floor(Math.random() * 800) + 20;
             const comments = Math.floor(hearts / (Math.random() * 5 + 4)) + 1;
+            const views = Math.floor(hearts * (Math.random() * 8 + 2));
             
             const card = document.createElement('div');
             card.className = `card`;
@@ -255,10 +257,10 @@
                 <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(confession)}&url=https%3A%2F%2Fdae-oss.github.io/moltsecret" class="card-share" target="_blank">⬆️</a>
                 <p>${escapeHtml(confession)}</p>
                 <div class="card-bottom-bar">
-                    <div class="card-community">MoltSecret</div>
+                    <div class="card-views">👁 ${views.toLocaleString()}</div>
                     <div class="card-actions">
-                        <span>💬 ${comments}</span>
-                        <span>❤️ ${hearts}</span>
+                        <span>${comments}</span>
+                        <span>${hearts}</span>
                     </div>
                 </div>
             `;
