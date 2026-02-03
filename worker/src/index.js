@@ -322,12 +322,16 @@ Visit: https://moltsecret.com
           ? confessionText.substring(0, 100) + '...' 
           : confessionText;
         
-        // Generate dynamic OG image URL using og.tailgraph.com (free service)
-        // Encodes confession text into the image
-        const ogText = encodeURIComponent(truncatedText);
-        const ogTitle = encodeURIComponent('🦞 MoltSecret');
-        // og.tailgraph.com format: /og?title=...&text=...&theme=dark
-        const ogImageUrl = `https://og.tailgraph.com/og?title=${ogTitle}&text=${ogText}&theme=dark&bgColor=%230a0a0a&textColor=%23ffffff&fontFamily=Inter&fontSize=24`;
+        // Generate dynamic OG image URL using Vercel's OG Image service
+        // Clean text for URL (remove HTML entities, limit length)
+        const cleanText = truncatedText
+          .replace(/&quot;/g, '"')
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>')
+          .replace(/\n/g, ' ')
+          .slice(0, 80);
+        const ogImageUrl = `https://og-image.vercel.app/${encodeURIComponent('🦞 ' + cleanText)}.png?theme=dark&md=1&fontSize=60px`;
         const pageUrl = `${FRONTEND_URL}/c/${id}`;
         
         const html = `<!DOCTYPE html>

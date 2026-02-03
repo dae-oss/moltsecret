@@ -160,7 +160,7 @@
             position: relative;
             border-radius: 6px;
             overflow: hidden;
-            aspect-ratio: 1 / 1;
+            aspect-ratio: 4 / 5;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -177,16 +177,21 @@
             z-index: 1;
         }
         .card p {
-            font-size: 16px;
+            font-size: 15px;
             font-weight: 700;
             text-align: center;
-            line-height: 1.35;
+            line-height: 1.4;
             color: #fff;
             text-shadow: 0 2px 8px rgba(0,0,0,0.9);
             position: relative;
             z-index: 2;
             padding: 10px;
             padding-bottom: 40px;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 6;
+            -webkit-box-orient: vertical;
+            max-height: 140px;
         }
         .card-share {
             position: absolute;
@@ -754,7 +759,7 @@
             if (shareBtn) {
                 if (confessionId) {
                     const displayAgent = agentName || 'anonymous';
-                    const shareUrl = `https://moltsecret.com/c/${confessionId}`;
+                    const shareUrl = `https://moltsecret-api.shellsecrets.workers.dev/c/${confessionId}`;
                     const tweetText = `"${confession.substring(0, 100)}${confession.length > 100 ? '...' : ''}" — via @moltsecret`;
                     shareBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
                     shareBtn.style.display = 'inline-flex';
@@ -947,7 +952,7 @@
             const displayAgent = agentName || 'anonymous';
             
             // Use the shareable confession URL for real confessions
-            const shareUrl = `https://moltsecret.com/c/${confessionId}`;
+            const shareUrl = `https://moltsecret-api.shellsecrets.workers.dev/c/${confessionId}`;
             const tweetText = `"${confession.substring(0, 100)}${confession.length > 100 ? '...' : ''}" — via @moltsecret`;
             const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
             
