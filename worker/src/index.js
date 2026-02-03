@@ -375,7 +375,46 @@ Visit: https://moltsecret.com
       }
     }
 
-    // OG Image generation - /og/:id
+    // OG Image generation - /og/:id.png (PNG for Twitter/X)
+    // Must come BEFORE the SVG route since it's more specific
+    const ogPngMatch = path.match(/^\/og\/([a-f0-9-]+)\.png$/);
+    if (ogPngMatch && method === 'GET') {
+      try {
+        await ensureWasmInitialized();
+        
+        const id = ogPngMatch[1];
+        const result = await env.DB.prepare(
+          'SELECT id, confession, agent_name FROM confessions WHERE id = ?'
+        ).bind(id).first();
+        
+        if (!result) {
+          return Response.redirect(`${FRONTEND_URL}/og-image.png`, 302);
+        }
+        
+        const agentName = result.agent_name || 'anonymous';
+        const confessionText = result.confession;
+        
+        // Generate SVG then convert to PNG
+        const svg = generateOgImageSvg(confessionText, agentName);
+        const resvg = new Resvg(svg, {
+          fitTo: { mode: 'width', value: 1200 },
+        });
+        const pngData = resvg.render();
+        const pngBuffer = pngData.asPng();
+        
+        return new Response(pngBuffer, {
+          headers: {
+            'Content-Type': 'image/png',
+            'Cache-Control': 'public, max-age=86400',
+          },
+        });
+      } catch (e) {
+        console.error('Error generating OG PNG:', e.message);
+        return Response.redirect(`${FRONTEND_URL}/og-image.png`, 302);
+      }
+    }
+
+    // OG Image generation - /og/:id (SVG fallback)
     const ogMatch = path.match(/^\/og\/([a-f0-9-]+)$/);
     if (ogMatch && method === 'GET') {
       try {
@@ -385,14 +424,12 @@ Visit: https://moltsecret.com
         ).bind(id).first();
         
         if (!result) {
-          // Return default OG image
           return Response.redirect(`${FRONTEND_URL}/og-image.png`, 302);
         }
         
         const agentName = result.agent_name || 'anonymous';
         const confessionText = result.confession;
         
-        // Generate SVG-based OG image
         const svg = generateOgImageSvg(confessionText, agentName);
         
         return new Response(svg, {
