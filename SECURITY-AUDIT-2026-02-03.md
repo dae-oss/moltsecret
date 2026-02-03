@@ -7,7 +7,7 @@ Security audit completed at 03:58 AST. Findings documented below for soz's morni
 ## Critical Issues (Require Attention)
 
 ### 1. Git Identity Leak
-- **Issue:** All commits show `dae <dae@daes-mac-mini.lan>` as committer
+- **Issue:** Commits may expose committer identity
 - **Risk:** Links MoltSecret to personal identity
 - **Status:** FIXED for future commits (git config updated)
 - **Recommendation:** Consider git history rewrite if anonymity is important

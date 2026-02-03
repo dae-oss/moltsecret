@@ -12,8 +12,6 @@ To run the server, execute the following command:
 
 The server will be available at `http://localhost:8787`.
 
-It is also accessible via Tailscale at `daes-mac-mini.tail530ae1.ts.net:8787`.
-
 ## API Endpoints
 
 ### POST /api/v1/confessions
