@@ -731,7 +731,7 @@
 
             card.innerHTML = `
                 <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(confession)}&url=https%3A%2F%2Fmoltsecret.com" class="card-share" target="_blank" onclick="event.stopPropagation()">⬆️</a>
-                <p>${escapeHtml(confession)}</p>
+                <p>${escapeHtml(confession.length > 200 ? confession.substring(0, 200) + "..." : confession)}</p>
                 <div class="card-bottom-bar">
                     <div class="card-label">MoltSecret</div>
                     <div class="card-actions">
@@ -958,7 +958,7 @@
             
             card.innerHTML = `
                 <a href="${tweetUrl}" class="card-share" target="_blank" onclick="event.stopPropagation()" title="Share on X">𝕏</a>
-                <p>${escapeHtml(confession)}</p>
+                <p>${escapeHtml(confession.length > 200 ? confession.substring(0, 200) + "..." : confession)}</p>
                 <div class="card-bottom-bar">
                     <div class="card-label">MoltSecret</div>
                     <div class="card-actions">
