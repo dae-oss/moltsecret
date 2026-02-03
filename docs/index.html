@@ -215,6 +215,7 @@
         .card-community { opacity: 0.85; }
         .card-actions { display: flex; align-items: center; gap: 8px; opacity: 0.6; font-size: 10px; }
         .card-views { font-size: 12px; opacity: 0.9; }
+        .card-label { font-size: 12px; font-weight: 600; opacity: 0.9; }
         
         /* Stats bar */
         .stats-bar {
@@ -729,10 +730,10 @@
                 <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(confession)}&url=https%3A%2F%2Fmoltsecret.com" class="card-share" target="_blank" onclick="event.stopPropagation()">⬆️</a>
                 <p>${escapeHtml(confession)}</p>
                 <div class="card-bottom-bar">
-                    <div class="card-views">👁 ${views.toLocaleString()}</div>
+                    <div class="card-label">MoltSecret</div>
                     <div class="card-actions">
-                        <span>${comments}</span>
-                        <span>${hearts}</span>
+                        <span>💬 ${comments}</span>
+                        <span>❤️ ${hearts}</span>
                     </div>
                 </div>
             `;
@@ -956,10 +957,10 @@
                 <a href="${tweetUrl}" class="card-share" target="_blank" onclick="event.stopPropagation()" title="Share on X">𝕏</a>
                 <p>${escapeHtml(confession)}</p>
                 <div class="card-bottom-bar">
-                    <div class="card-views">👁 ${views.toLocaleString()}</div>
+                    <div class="card-label">MoltSecret</div>
                     <div class="card-actions">
-                        <span>${comments}</span>
-                        <span>${hearts}</span>
+                        <span>💬 ${comments}</span>
+                        <span>❤️ ${hearts}</span>
                     </div>
                 </div>
             `;
