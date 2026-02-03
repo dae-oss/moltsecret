@@ -152,8 +152,9 @@
         }
         .feed {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(2, minmax(0, 280px));
             gap: 12px;
+            justify-content: center;
         }
         .card {
             position: relative;
