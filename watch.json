@@ -1,0 +1,18 @@
+{
+  "install": {
+    "include": [
+      "^requirements\.txt$"
+    ]
+  },
+  "restart": {
+    "include": [
+      "^.*\\.py$",
+      "^glitch\.json$",
+      "^watch\.json$"
+    ],
+    "exclude": [
+      "^README\.md$"
+    ]
+  },
+  "throttle": 1000
+}
