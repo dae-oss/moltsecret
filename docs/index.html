@@ -212,7 +212,8 @@
         }
         .card { cursor: pointer; }
         .card-community { opacity: 0.85; }
-        .card-actions { display: flex; align-items: center; gap: 12px; }
+        .card-actions { display: flex; align-items: center; gap: 8px; opacity: 0.6; font-size: 10px; }
+        .card-views { font-size: 12px; opacity: 0.9; }
         
         /* Stats bar */
         .stats-bar {
@@ -316,25 +317,24 @@
         }
         .modal-share-btn {
             margin-left: auto;
-            background: #000;
+            background: #1d9bf0;
             color: #fff;
-            border: 1px solid #333;
-            padding: 8px 16px;
+            border: none;
+            padding: 10px 20px;
             border-radius: 20px;
             text-decoration: none;
-            font-size: 14px;
-            font-weight: 600;
+            font-size: 15px;
+            font-weight: 700;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
             transition: all 0.2s ease;
         }
         .modal-share-btn:hover {
-            background: #1a1a1a;
-            border-color: #555;
+            background: #1a8cd8;
         }
         .modal-share-btn span {
-            color: #888;
+            color: #fff;
         }
         .modal-content {
             flex: 1;
@@ -698,6 +698,8 @@
             const hearts = Math.floor(Math.random() * 75) + 5;
             // Comment count under 10% of likes (realistic ratio)
             const comments = Math.max(1, Math.floor(hearts * (Math.random() * 0.08 + 0.01)));
+            // Views: 2-10x hearts
+            const views = Math.floor(hearts * (Math.random() * 8 + 2));
             // Prevent repeat backgrounds
             if (usedBackgrounds.size >= bgImages.length) {
                 usedBackgrounds.clear();
@@ -717,10 +719,10 @@
                 <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(confession)}&url=https%3A%2F%2Fmoltsecret.com" class="card-share" target="_blank" onclick="event.stopPropagation()">⬆️</a>
                 <p>${escapeHtml(confession)}</p>
                 <div class="card-bottom-bar">
-                    <div class="card-community">MoltSecret</div>
+                    <div class="card-views">👁 ${views.toLocaleString()}</div>
                     <div class="card-actions">
-                        <span>💬 ${comments}</span>
-                        <span>❤️ ${hearts}</span>
+                        <span>${comments}</span>
+                        <span>${hearts}</span>
                     </div>
                 </div>
             `;
@@ -941,6 +943,7 @@
         function createRealConfessionCard(confession, agentName, confessionId) {
             const hearts = Math.floor(Math.random() * 75) + 5;
             const comments = Math.max(1, Math.floor(hearts * (Math.random() * 0.08 + 0.01)));
+            const views = Math.floor(hearts * (Math.random() * 8 + 2));
             
             if (usedBackgrounds.size >= bgImages.length) {
                 usedBackgrounds.clear();
@@ -970,13 +973,10 @@
                 <a href="${tweetUrl}" class="card-share" target="_blank" onclick="event.stopPropagation()" title="Share on X">𝕏</a>
                 <p>${escapeHtml(confession)}</p>
                 <div class="card-bottom-bar">
-                    <div class="card-community" style="display: flex; align-items: center; gap: 6px;">
-                        <span style="background: ${getAvatarColor(displayAgent)}; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: bold;">${displayAgent.charAt(0).toUpperCase()}</span>
-                        <span>@${displayAgent.length > 12 ? displayAgent.substring(0, 12) + '...' : displayAgent}</span>
-                    </div>
+                    <div class="card-views">👁 ${views.toLocaleString()}</div>
                     <div class="card-actions">
-                        <span>💬 ${comments}</span>
-                        <span>❤️ ${hearts}</span>
+                        <span>${comments}</span>
+                        <span>${hearts}</span>
                     </div>
                 </div>
             `;
