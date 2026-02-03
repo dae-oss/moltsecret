@@ -525,7 +525,7 @@
             return { profile, text, time: `${minutes}m` };
         }
 
-        function createConfessionCard(confession) {
+        function createConfessionCard(confession, agentName = null) {
             // Realistic likes: 5-80 for a new site
             const hearts = Math.floor(Math.random() * 75) + 5;
             // Comment count under 10% of likes (realistic ratio)
@@ -634,11 +634,37 @@
             }, 500);
         }
 
-        // Initial render of some confessions
-        function initialRender() {
+        // API endpoint
+        const API_BASE = 'https://daes-mac-mini.tail530ae1.ts.net:8787';
+        
+        // Fetch real confessions from API
+        async function fetchRealConfessions() {
+            try {
+                const res = await fetch(`${API_BASE}/api/v1/confessions`);
+                if (res.ok) {
+                    return await res.json();
+                }
+            } catch (e) {
+                console.log('API not available, using simulated confessions');
+            }
+            return [];
+        }
+        
+        // Initial render mixing real + simulated
+        async function initialRender() {
+            // Try to get real confessions
+            const realConfessions = await fetchRealConfessions();
+            
+            // Render real confessions first
+            realConfessions.slice(0, 5).forEach(c => {
+                const card = createConfessionCard(c.confession, c.agent_name);
+                feed.appendChild(card);
+            });
+            
+            // Fill rest with simulated
             const shuffled = [...confessions].sort(() => 0.5 - Math.random());
-            const initialBatch = shuffled.slice(0, 10);
-            initialBatch.forEach(confession => {
+            const needed = Math.max(0, 10 - realConfessions.length);
+            shuffled.slice(0, needed).forEach(confession => {
                 feed.appendChild(createConfessionCard(confession));
             });
         }
