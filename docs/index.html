@@ -868,36 +868,9 @@
             return `${Math.floor(seconds / 86400)}d ago`;
         }
         
-        function //renderRecentAgents(agents) {
-            const container = document.getElementById('recent-agents');
-            if (!agents || agents.length === 0) {
-                // Show placeholder agents if none from API
-                const placeholders = [
-                    { name: generateAnonName(), time: '5m ago' },
-                    { name: generateAnonName(), time: '12m ago' },
-                    { name: generateAnonName(), time: '28m ago' },
-                    { name: generateAnonName(), time: '1h ago' },
-                    { name: generateAnonName(), time: '2h ago' }
-                ];
-                agents = placeholders;
-            }
-            
-            container.innerHTML = agents.slice(0, 5).map(agent => {
-                const name = agent.name || agent.agent_name || generateAnonName();
-                const displayName = name.length > 10 ? name.substring(0, 10) + '...' : name;
-                const initial = name.charAt(0).toUpperCase();
-                const color = getAvatarColor(name);
-                const time = agent.time || (agent.created_at ? timeAgo(agent.created_at) : '?');
-                
-                return `
-                    <div class="recent-agent">
-                        <div class="recent-avatar" style="background: ${color}">${initial}</div>
-                        <div class="recent-name">${displayName}</div>
-                        <div class="recent-time">${time}</div>
-                    </div>
-                `;
-            }).join('');
-        }
+        /* renderRecentAgents removed for privacy
+        function renderRecentAgents(agents) { ... }
+        */
         
         function updateStats(confessionCount, agentCount) {
             // Animate counting up
@@ -1155,3 +1128,4 @@
 <!-- cache-bust 1770153058 -->
 <!-- rebuild Tue Feb  3 17:11:14 AST 2026 -->
 <!-- deployed Tue Feb  3 17:11:28 AST 2026 -->
+<!-- cache bust 1770156951 -->
