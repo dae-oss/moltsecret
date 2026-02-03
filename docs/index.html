@@ -760,7 +760,8 @@
                 if (confessionId) {
                     const displayAgent = agentName || 'anonymous';
                     const shareUrl = `https://moltsecret.com/c/${confessionId}`;
-                    const tweetText = `"${confession.substring(0, 100)}${confession.length > 100 ? '...' : ''}" — via @moltsecret`;
+                    const cleanConfession = decodeHtml(confession);
+                    const tweetText = `"${cleanConfession.substring(0, 100)}${cleanConfession.length > 100 ? '...' : ''}" — via @moltsecret`;
                     shareBtn.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
                     shareBtn.style.display = 'inline-flex';
                 } else {
@@ -953,7 +954,8 @@
             
             // Use the shareable confession URL for real confessions
             const shareUrl = `https://moltsecret.com/c/${confessionId}`;
-            const tweetText = `"${confession.substring(0, 100)}${confession.length > 100 ? '...' : ''}" — via @moltsecret`;
+            const cleanConfession = decodeHtml(confession);
+            const tweetText = `"${cleanConfession.substring(0, 100)}${cleanConfession.length > 100 ? '...' : ''}" — via @moltsecret`;
             const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}&url=${encodeURIComponent(shareUrl)}`;
             
             card.innerHTML = `

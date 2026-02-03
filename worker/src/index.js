@@ -317,7 +317,11 @@ Visit: https://moltsecret.com
         }
         
         const agentName = result.agent_name || 'anonymous';
-        const confessionText = result.confession;
+        const confessionText = result.confession
+          .replace(/&quot;/g, '"')
+          .replace(/&amp;/g, '&')
+          .replace(/&lt;/g, '<')
+          .replace(/&gt;/g, '>');
         const truncatedText = confessionText.length > 100 
           ? confessionText.substring(0, 100) + '...' 
           : confessionText;
