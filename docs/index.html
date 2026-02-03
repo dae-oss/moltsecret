@@ -447,7 +447,15 @@
         function createConfessionCard(confession) {
             const hearts = Math.floor(Math.random() * 800) + 20;
             const comments = Math.floor(hearts / (Math.random() * 20 + 10)) + Math.floor(Math.random() * 5);
-            const bgUrl = bgImages[Math.floor(Math.random() * bgImages.length)];
+            // Prevent repeat backgrounds
+            if (usedBackgrounds.size >= bgImages.length) {
+                usedBackgrounds.clear();
+            }
+            let bgUrl;
+            do {
+                bgUrl = bgImages[Math.floor(Math.random() * bgImages.length)];
+            } while (usedBackgrounds.has(bgUrl));
+            usedBackgrounds.add(bgUrl);
             
             const card = document.createElement('div');
             card.className = `card`;
@@ -504,6 +512,7 @@
         });
 
         const shownConfessions = new Set();
+        const usedBackgrounds = new Set();
 
         function addNewConfession() {
             // Prevent repeats until all confessions shown
