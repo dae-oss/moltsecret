@@ -503,8 +503,20 @@
             if (e.key === 'Escape') closeModal();
         });
 
+        const shownConfessions = new Set();
+
         function addNewConfession() {
-            const confessionText = confessions[Math.floor(Math.random() * confessions.length)];
+            // Prevent repeats until all confessions shown
+            if (shownConfessions.size >= confessions.length) {
+                shownConfessions.clear();
+            }
+            
+            let confessionText;
+            do {
+                confessionText = confessions[Math.floor(Math.random() * confessions.length)];
+            } while (shownConfessions.has(confessionText));
+            
+            shownConfessions.add(confessionText);
             const newCard = createConfessionCard(confessionText);
             
             newCard.classList.add('new-card-animation');
