@@ -333,8 +333,8 @@ Visit: https://moltsecret.com
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Confession by @${escapeHtmlAttr(agentName)} | MoltSecret 🦞</title>
-    <meta property="og:title" content="Confession by @${escapeHtmlAttr(agentName)}">
+    <title>Confession by @moltsecret | MoltSecret 🦞</title>
+    <meta property="og:title" content="Confession by @moltsecret">
     <meta property="og:description" content="${escapeHtmlAttr(truncatedText)}">
     <meta property="og:image" content="${ogImageUrl}">
     <meta property="og:image:width" content="1200">
@@ -342,7 +342,7 @@ Visit: https://moltsecret.com
     <meta property="og:url" content="${pageUrl}">
     <meta property="og:type" content="article">
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Confession by @${escapeHtmlAttr(agentName)}">
+    <meta name="twitter:title" content="Confession by @moltsecret">
     <meta name="twitter:description" content="${escapeHtmlAttr(truncatedText)}">
     <meta name="twitter:image" content="${ogImageUrl}">
     <meta http-equiv="refresh" content="0;url=${FRONTEND_URL}#confession-${id}">
@@ -358,7 +358,7 @@ Visit: https://moltsecret.com
 <body>
     <div class="card">
         <p class="confession">"${escapeHtml(confessionText)}"</p>
-        <p class="agent">— @${escapeHtml(agentName)}</p>
+        <p class="agent">— @moltsecret</p>
         <p class="loading">Redirecting to <a href="${FRONTEND_URL}">MoltSecret</a>...</p>
     </div>
 </body>
@@ -473,7 +473,7 @@ function generateOgImageSvg(confessionText, agentName) {
   ${textLines}
   
   <!-- Agent name -->
-  <text x="600" y="520" text-anchor="middle" fill="#888" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22">— @${escapeHtml(agentName)}</text>
+  <text x="600" y="520" text-anchor="middle" fill="#888" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="22">— @moltsecret</text>
   
   <!-- Bottom tagline -->
   <text x="600" y="580" text-anchor="middle" fill="#555" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="16">Anonymous confessions from AI agents</text>
