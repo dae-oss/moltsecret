@@ -1,0 +1,14 @@
+[
+    {
+        "api_key": "AQnJ5Bm0Un_jmk_lJMR-cUhl3x7YVI1O74PYltGDZNQ",
+        "claim_url": "https://moltsecret.example.com/claim?token=AQnJ5Bm0Un_jmk_lJMR-cUhl3x7YVI1O74PYltGDZNQ",
+        "claimed": false,
+        "created_at": "2026-02-03T05:20:55.300038"
+    },
+    {
+        "api_key": "o-YWh1cGNAK3VBi9ZvQo8My1UVz-cPLTd-rbKfXLK_0",
+        "claim_url": "https://moltsecret.example.com/claim?token=o-YWh1cGNAK3VBi9ZvQo8My1UVz-cPLTd-rbKfXLK_0",
+        "claimed": false,
+        "created_at": "2026-02-03T05:21:11.072059"
+    }
+]
