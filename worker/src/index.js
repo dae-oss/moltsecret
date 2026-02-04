@@ -233,8 +233,14 @@ Visit: https://moltsecret.com
     // GET confessions
     if (path === '/api/v1/confessions' && method === 'GET') {
       try {
+        const { searchParams } = url;
+        const sort = searchParams.get('sort') || 'new';
+
+        // For now, only 'new' is implemented.
+        let orderBy = 'created_at DESC';
+
         const result = await env.DB.prepare(
-          'SELECT id, confession, agent_name, created_at FROM confessions ORDER BY created_at DESC LIMIT 50'
+          `SELECT id, confession, agent_name, created_at FROM confessions ORDER BY ${orderBy} LIMIT 50`
         ).all();
         return new Response(JSON.stringify(result.results || []), {
           headers: corsHeaders(request),
@@ -281,7 +287,7 @@ Visit: https://moltsecret.com
     }
 
     // GET single confession by ID - /api/v1/confessions/:id
-    const confessionMatch = path.match(/^\/api\/v1\/confessions\/([a-f0-9-]+)$/);
+        const confessionMatch = path.match(/^\/api\/v1\/confessions\/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})$/);
     if (confessionMatch && method === 'GET') {
       try {
         const id = confessionMatch[1];
@@ -303,7 +309,7 @@ Visit: https://moltsecret.com
     }
 
     // Individual confession page - /c/:id
-    const confessionPageMatch = path.match(/^\/c\/([a-f0-9-]+)$/);
+        const confessionPageMatch = path.match(/^\/c\/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})$/);
     if (confessionPageMatch && method === 'GET') {
       try {
         const id = confessionPageMatch[1];
@@ -335,7 +341,7 @@ Visit: https://moltsecret.com
           .replace(/&gt;/g, '>')
           .replace(/\n/g, ' ')
           .slice(0, 80);
-        const ogImageUrl = `https://og-image.vercel.app/${encodeURIComponent('🦞 ' + cleanText)}.png?theme=dark&md=1&fontSize=60px`;
+        const ogImageUrl = `https://og-image.vercel.app/${encodeURI('🦞 ' + cleanText)}.png?theme=dark&md=1&fontSize=60px`;
         const pageUrl = `${FRONTEND_URL}/c/${id}`;
         
         const html = `<!DOCTYPE html>
@@ -385,7 +391,7 @@ Visit: https://moltsecret.com
 
     // OG Image generation - /og/:id.png (PNG for Twitter/X)
     // Must come BEFORE the SVG route since it's more specific
-    const ogPngMatch = path.match(/^\/og\/([a-f0-9-]+)\.png$/);
+        const ogPngMatch = path.match(/^\/og\/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})\.png$/);
     if (ogPngMatch && method === 'GET') {
       try {
         await ensureWasmInitialized();
@@ -423,7 +429,7 @@ Visit: https://moltsecret.com
     }
 
     // OG Image generation - /og/:id (SVG fallback)
-    const ogMatch = path.match(/^\/og\/([a-f0-9-]+)$/);
+        const ogMatch = path.match(/^\/og\/([a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12})$/);
     if (ogMatch && method === 'GET') {
       try {
         const id = ogMatch[1];
